@@ -32,17 +32,6 @@ const openai = new OpenAIApi(configuration);
 //   res.sendFile(path.join(buildPath, "index.html"));
 // });
 
-app.post("/", (req: Request, res: Response) => {
-  res.send("hello");
-});
-
-app.post("/test", (req: Request, res: Response) => {
-  const requestData = req.body.prompt;
-  console.log(requestData);
-  const response = JSON.parse('{"name":"John", "age":30, "city":"New York"}');
-  res.send(response);
-});
-
 app.post("/sketch", async (req: Request, res: Response) => {
   const prompt = req.body.prompt;
   console.log(`Received prompt: ${prompt}`);
@@ -54,7 +43,7 @@ app.post("/sketch", async (req: Request, res: Response) => {
           role: "system",
           content: `You are an expert web developer.
             Your job is to convert a natural language description of a user interface and turn it into valid HTML. 
-            Only use vanilla HTML and CSS. Don't include any image URLs. Only return valid HTML without any extra explanation.`,
+            Only use vanilla HTML and CSS. Don't include any images. Only return valid HTML without any extra explanation.`,
         },
         // {
         //   role: "user",

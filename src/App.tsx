@@ -7,15 +7,16 @@ interface SketchProps {
   output: string;
 }
 
-const InitSketch: string = `<div style="height:100px;width:100px;background-color:purple;border-radius:50%`;
+const InitSketch: string = `<div style="height:200px;width:200px;background-color:purple;border-radius:50%;background:radial-gradient(#f0ceff,#b042ff)"></div>`;
 
-const LoadingSpinner = () => {
+const LoadingDots = () => {
   return (
-    <div className="spinner-container">
-      <div
-        className="loading-spinner"
-        style={{ borderColor: "black", borderBottomColor: "transparent" }}
-      ></div>
+    <div className="loading-container">
+      <div className="snippet" data-title="dot-flashing">
+        <div className="stage">
+          <div className="dot-flashing"></div>
+        </div>
+      </div>
     </div>
   );
 };
@@ -23,10 +24,8 @@ const LoadingSpinner = () => {
 const SketchComponent: React.FC<SketchProps> = ({ output }) => {
   console.log(output);
   return (
-    <div dangerouslySetInnerHTML={{ __html: output }} r>
-      {/* {output} */}
-      {/* <div dangerouslySetInnerHTML={test} />
-      <div dangerouslySetInnerHTML={htmlObj} /> */}
+    <div className="output-container">
+      <div dangerouslySetInnerHTML={{ __html: output }}></div>
     </div>
   );
 };
@@ -47,6 +46,7 @@ function App() {
     if (prompt.trim() !== "") {
       try {
         setLoading(true);
+        setSketch("");
         const response = await fetch(`${API_BASE_URL}/sketch`, {
           method: "POST",
           headers: {
@@ -64,6 +64,11 @@ function App() {
     }
   };
 
+  const handleCopyHTML = async () => {
+    await navigator.clipboard.writeText(JSON.stringify(sketch));
+    alert("HTML copied to clipboard");
+  };
+
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
@@ -73,22 +78,26 @@ function App() {
   return (
     <>
       <h1>sketch</h1>
-      <input
-        className="prompt-input"
-        type="text"
-        ref={inputRef}
-        name="prompt"
-        value={prompt}
-        placeholder="a purple circle"
-        onChange={(e) => setPrompt(e.target.value)}
-        onKeyDown={handleKeyDown}
-        autoComplete="off"
-        spellCheck="false"
-      ></input>
-      <div>{loading ? <LoadingSpinner /> : null}</div>
-      <br />
-      <br />
-      {<SketchComponent output={sketch} />}
+      <div className="container">
+        <input
+          className="prompt-input"
+          type="text"
+          ref={inputRef}
+          name="prompt"
+          value={prompt}
+          placeholder="purple gradient circle"
+          onChange={(e) => setPrompt(e.target.value)}
+          onKeyDown={handleKeyDown}
+          autoComplete="off"
+          spellCheck="false"
+          text-overflow="ellipsis"
+        ></input>
+        <div className="sketch-container">
+          <div>{loading ? <LoadingDots /> : null}</div>
+          {<SketchComponent output={sketch} />}
+        </div>
+      </div>
+      <button onClick={handleCopyHTML}>copy HTML</button>
     </>
   );
 }
